@@ -116,7 +116,7 @@
                         <tr>
                             <td>Cara Bayar</td>
                             <td>:</td>
-                            <td>{{ $receipt->caraBayar == "1" ? "Cash" :  $receipt->caraBayar == "2"? "Debit" : "CC"}}
+                            <td>{{ $receipt->caraBayar == "1" ? "Cash" :  ($receipt->caraBayar == "2"? "Debit" : "CC")}}
                             </td>
                         </tr>
                         <tr>
