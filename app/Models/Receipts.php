@@ -53,7 +53,7 @@ class Receipts extends Model
         $sql = "select Ceiling(sum(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100))) as totalHutang from tnota   where isSelesai = 2";
         $totalHutangSemua = DB::select($sql)[0]->totalHutang;
 
-        $sql = "select SUM(nilai) as cicilan from tCicilanHutang a inner join tnota b on a.noNota=b.noNota where b.isSelesai=2 and nilai>0";
+        $sql = "select SUM(nilai) as cicilan from tcicilanhutang a inner join tnota b on a.noNota=b.noNota where b.isSelesai=2 and nilai>0";
 
         $cicilan = DB::select($sql)[0]->cicilan;
 
@@ -75,7 +75,7 @@ class Receipts extends Model
 
     public static function getRetur($id)
     {
-        $sql = "SELECT noBarang,namaBarang, qty, namaSatuan, tanggalRetur, alasan, namaUser FROM tretur a inner join trincianRetur b on a.noRetur=b.noRetur where noNota ='$id'";
+        $sql = "SELECT noBarang,namaBarang, qty, namaSatuan, tanggalRetur, alasan, namaUser FROM tretur a inner join trincianretur b on a.noRetur=b.noRetur where noNota ='$id'";
         return DB::select($sql);
     }
 
@@ -169,7 +169,7 @@ class Receipts extends Model
     public static function getReturPembelian($id)
     {
         $id = str_replace("%20", " ", $id);
-        $query = "SELECT noBarang,namaBarang, qty, namaSatuan, tanggalRetur, alasan, namaUser FROM tretur a inner join trincianRetur b on a.noRetur=b.noRetur where noNota like '%$id%'";
+        $query = "SELECT noBarang,namaBarang, qty, namaSatuan, tanggalRetur, alasan, namaUser FROM tretur a inner join trincianretur b on a.noRetur=b.noRetur where noNota like '%$id%'";
         return DB::select($query);
     }
 
