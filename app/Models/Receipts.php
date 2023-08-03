@@ -29,7 +29,7 @@ class Receipts extends Model
 
     public static function getTotalPembelianHariIni($tanggalAwal, $tanggalAkhir)
     {
-        $sql = "select ifNull(sum(a.qty * a.hargaBeli),0) as total  from tTransaksi a, tnota b where a.noNota = b.noNota and b.isPenjualan = 0  and tanggalNota <='". $tanggalAkhir ."' and tanggalNota >='". $tanggalAwal ."'";
+        $sql = "select ifNull(sum(a.qty * a.hargaBeli),0) as total  from ttransaksi a, tnota b where a.noNota = b.noNota and b.isPenjualan = 0  and tanggalNota <='". $tanggalAkhir ."' and tanggalNota >='". $tanggalAwal ."'";
 
         return DB::select($sql)[0]->total;
     }
@@ -69,7 +69,7 @@ class Receipts extends Model
 
     public static function getDetailNota($id)
     {
-        $sql = "select noBarang,namaBarang,namaSatuan ,qtyTampil,hargaJualSatuan, (qtyTampil*hargaJualSatuan) as total  FROM tTransaksi where noNota ='$id'";
+        $sql = "select noBarang,namaBarang,namaSatuan ,qtyTampil,hargaJualSatuan, (qtyTampil*hargaJualSatuan) as total  FROM ttransaksi where noNota ='$id'";
         return DB::select($sql);
     }
 
@@ -88,7 +88,7 @@ class Receipts extends Model
 
     public static function getTotalPembelianHariIniResume($tanggalAwal, $tanggalAkhir)
     {
-        $query ="select ifNull(sum(a.qty * a.hargaBeli),0) as total  from tTransaksi a, tnota b where a.noNota = b.noNota and b.isPenjualan = 1  and tanggalNota <='". $tanggalAkhir ." 23:59:59'  and tanggalNota >='". $tanggalAwal ." 00:00:00'";
+        $query ="select ifNull(sum(a.qty * a.hargaBeli),0) as total  from ttransaksi a, tnota b where a.noNota = b.noNota and b.isPenjualan = 1  and tanggalNota <='". $tanggalAkhir ." 23:59:59'  and tanggalNota >='". $tanggalAwal ." 00:00:00'";
         return DB::select($query)[0]->total;
     }
 
@@ -100,7 +100,7 @@ class Receipts extends Model
 
     public static function getProductResume($tanggalAwal, $tanggalAkhir)
     {
-        $query =" SELECT noBarang , namaBarang, FORMAT(sum(qty), 2, 'de_DE')  as qty,  FORMAT(harga, 2, 'de_DE')  as hargaProduk,  FORMAT(sum(qty * harga), 2, 'de_DE')  as total FROM tnota inner join tTransaksi on tTransaksi.noNota=tnota.noNota where tnota.isPenjualan = 1 and tnota.isSelesai = 1 and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' group by noBarang ,namaBarang order by namaBarang";
+        $query =" SELECT noBarang , namaBarang, FORMAT(sum(qty), 2, 'de_DE')  as qty,  FORMAT(harga, 2, 'de_DE')  as hargaProduk,  FORMAT(sum(qty * harga), 2, 'de_DE')  as total FROM tnota inner join ttransaksi on ttransaksi.noNota=tnota.noNota where tnota.isPenjualan = 1 and tnota.isSelesai = 1 and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' group by noBarang ,namaBarang order by namaBarang";
 
         return DB::select($query);
     }
@@ -128,7 +128,7 @@ class Receipts extends Model
     public static function getDetailNotaPembelian($id)
     {
         $id = str_replace("%20", " ", $id);
-        $query = "SELECT noBarang  ,namaBarang,qty, namaSatuan,harga, ifnull(diskon,0) as diskon, ifnull(diskon2,0) as diskon2, ifnull(potongan,0) as potongan, ifnull(ppn,0) as ppn, '0' as hargaSetelahPPn, '0' as subTotal, ifnull(tglExpired,'') as tglExpired, idStok FROM tTransaksi where noNota like '%$id%'";
+        $query = "SELECT noBarang  ,namaBarang,qty, namaSatuan,harga, ifnull(diskon,0) as diskon, ifnull(diskon2,0) as diskon2, ifnull(potongan,0) as potongan, ifnull(ppn,0) as ppn, '0' as hargaSetelahPPn, '0' as subTotal, ifnull(tglExpired,'') as tglExpired, idStok FROM ttransaksi where noNota like '%$id%'";
 
 
         $data =  DB::select($query);
