@@ -23,6 +23,7 @@ class Receipts extends Model
     public static function getTotalPenjualanHariIni($tanggalAwal, $tanggalAkhir)
     {
         $sql = "SELECT ifNull((sum(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100))),0) as grandTotal   FROM tnota where isPenjualan = 1 and tanggalNota <='". $tanggalAkhir ."' and tanggalNota >='". $tanggalAwal ."'";
+        dd($sql);
 
         return DB::select($sql)[0]->grandTotal;
     }

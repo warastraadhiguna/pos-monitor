@@ -9,8 +9,8 @@ class DashboardController extends Controller
     public function index()
     {
         $nowDate = GetNowDate();
-        $tanggalAwal = DateFormat($nowDate, "Y/m/d 00:00:00");
-        $tanggalAkhir = DateFormat($nowDate, "Y/m/d 23:59:59");
+        $tanggalAwal = DateFormat($nowDate, "Y/M/D 00:00:00");
+        $tanggalAkhir = DateFormat($nowDate, "Y/M/D 23:59:59");
 
         $data =[
             'title' => "Dashboard",
