@@ -4,7 +4,7 @@
 				</div>
 			</div>
 
-		      <table class="table table-bordered table-striped">
+		      <table class="table table-bordered table-striped" width="100%">
 		        <tbody>
 		          <tr>
 		            <td>No Nota</td>            
@@ -52,7 +52,7 @@
 				</div>
 			</div>
 
-			<table class="table table-bordered table-striped" id="mytable">
+			<table class="table table-bordered table-striped table-responsive" id="mytable">
 				<thead>
 					<tr>
 						<th width="20px">No</th>

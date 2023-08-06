@@ -9,26 +9,52 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Stock extends Model
 {
     use HasFactory;
+    protected $table = "tstok";
+    protected $primaryKey = 'idStok';
     protected $guarded = [];
 
-    public static function getStock($tanggalAwal, $tanggalAkhir, $show, $limit)
+    public static function getStock($tanggalAwal, $tanggalAkhir, $show)
     {
-        $tanggalAwalShow = $tanggalAwal ? "and tanggalStok >='". $tanggalAwal ." 00:00:00'" : "";
-        $tanggalAkhirShow = $tanggalAkhir ? "tanggalStok <='". $tanggalAkhir ." 23:59:59'" : "";
+        $data = DB::query()
+        ->from("tstok")
+        ->select("idStok", DB::raw("DATE_FORMAT(tanggalStok, '%d-%m-%Y') as tanggalStok"), "tanggalStok as tanggalStokAsli", "noBarang", "namaBarang", "stok", "namasatuan", DB::raw("FORMAT(hargaJual, 2, 'de_DE') as hargaJual"), DB::raw("FORMAT(hargaBeli, 2, 'de_DE') as hargaBeli"), "namaUser", DB::raw("case when tglExpired= '0000-00-00 00:00:00' then '' else DATE_FORMAT(tglExpired, '%d-%m-%Y')   end as tglExpired"), "note");
 
-        $queryShow = $show === "1" ? "and stok=0" : ($show =="2" ? "and stok>0" : "");
+        if($tanggalAwal && $tanggalAwal !=="\"") {
+            $data->where("tanggalStok", ">=", $tanggalAwal ." 00:00:00");
+        }
 
-        $sql = "SELECT idStok, '' as ID,DATE_FORMAT(tanggalStok, '%d-%m-%Y') as tanggalStok,noBarang,namaBarang,stok, namasatuan,FORMAT(hargaJual, 2, 'de_DE') as hargaJual,FORMAT(hargaBeli, 2, 'de_DE') as hargaBeli, namaUser,case when tglExpired= '0000-00-00 00:00:00' then '' else DATE_FORMAT(tglExpired, '%d-%m-%Y')   end as tglExpired, note from tstok where idStok<>'' $tanggalAwalShow $tanggalAkhirShow $queryShow order by tanggalStok desc limit $limit" ;
+        if($tanggalAkhir && $tanggalAkhir !=="\"") {
+            $data->where("tanggalStok", "<=", $tanggalAkhir ." 23:59:59");
+        }
 
-        return DB::select($sql);
+        if($show == 1) {
+            $data->where("stok", "=", "0");
+        }
+
+        if($show == 2) {
+            $data->where("stok", ">", "0");
+        }
+
+        return $data->orderBy("tanggalStokAsli", "desc");
     }
 
-    public static function getTotalStock($show, $limit)
+    public static function getTotalStock($show)
     {
-        $queryShow = $show === "1" ? "and stok=0" : ($show =="2" ? "and stok>0" : "");
+        $data = DB::query()
+        ->from("tstok")
+        ->select("noBarang", "namaBarang", "namaSatuan", DB::raw("sum(stok) AS sumStok"), DB::raw("FORMAT(hargaBeli, 2, 'de_DE')  as hargaBeli"), DB::raw("case when sum(stok) < 0 then 0 else FORMAT(sum(stok*hargaBeli), 2, 'de_DE')   end as nilai"));
 
-        $sql = "SELECT noBarang, '' as ID,namaBarang,   sum(stok) AS stok, namaSatuan, FORMAT(hargaBeli, 2, 'de_DE')  as hargaBeli, case when sum(stok) < 0 then 0 else FORMAT(sum(stok*hargaBeli), 2, 'de_DE')   end as nilai from tstok where idStok<>'' $queryShow group by noBarang, namaBarang, namaSatuan order by namaBarang desc limit $limit" ;
+        if($show == 1) {
+            $data->having("sumStok", "=", 0);
+        }
 
-        return DB::select($sql);
+        if($show == 2) {
+            $data->having("sumStok", ">", 0);
+        }
+
+        $data->groupBy("noBarang", "namaBarang", "namaSatuan");
+
+        return $data->orderBy("namaBarang", "desc");
+
     }
 }

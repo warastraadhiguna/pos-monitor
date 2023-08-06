@@ -22,47 +22,22 @@
     </div>
 </div>
 
-<table class="table table-bordered table-striped" id="mytable">
-<thead>
-    <tr>
-    <th width="80px">No</th>
-    <th>Jenis Info</th>    
-    <th>Nilai</th>        
-    </tr>
-</thead>
-<tbody>
-    <tr>
-    <td>1</td>
-    <td>Total Penjualan</td>            
-    <td class="text-right"><?php echo number_format($totalPenjualanHariIni,0,",",".") ;?></td>                 
-    </tr>
-    <tr>
-    <td>2</td>
-    <td>Total Modal</td>            
-    <td class="text-right"><?php echo number_format($totalPembelianHariIni,0,",",".") ;?></td>                 
-    </tr>          
-    <tr>
-    <td>3</td>
-    <td>Total Laba</td>            
-    <td class="text-right"><?php echo number_format($totalPenjualanHariIni - $totalPembelianHariIni,0,",",".") ;?></td>                 
-    </tr>   
-    <tr>
-    <td>4</td>
-    <td>Margin Laba</td>            
-    <td class="text-right">
-    <?php 
-        if($totalPenjualanHariIni == 0) echo 0;
-        else echo number_format(100*(($totalPenjualanHariIni - $totalPembelianHariIni)/$totalPenjualanHariIni),3,",",".") . "%";
-        
-    ?></td>                 
-    </tr>   
-    <tr>
-    <td>5</td>
-    <td>Total Nota</td>            
-    <td class="text-right"><?php echo number_format($totalNotaHariIni,0,",",".") ;?></td>                 
-    </tr>  		  
-</tbody>
-
+<table id="receipt-sale-table" class="table table-bordered table-striped table-responsive" width="100%">
+    <thead>
+        <tr>
+            <th width="5%">No</th>
+            <th>No Nota</th>		
+            <th>Tanggal Nota</th>		    
+            <th>Total</th>			
+            <th>Diskon</th>		 
+            <th>Potongan</th>		
+            <th>Grand Total</th>		    
+            <th>Cara Bayar</th>			
+            <th>Kasir</th>	
+            <th>Member</th>		
+            <th width="15%">Action</th>
+        </tr>
+    </thead>
 </table>
 
 

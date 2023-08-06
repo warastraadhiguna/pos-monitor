@@ -2,7 +2,7 @@
 
 <div class="card">
     <div class="card-body">
-        <table class="table">
+        <table class="table table-responsive">
             <tbody>
                 <tr>
                     <td class="align-middle" width="10%">Tanggal</td>
@@ -22,7 +22,7 @@
     </div>
 </div>
 
-<table id="example1" class="table table-bordered table-striped" width="100%">
+<table id="receipt-sale-product-resume-table" class="table table-bordered table-striped" width="100%">
     <thead>
         <tr>
             <th width="40px">No</th>
@@ -33,18 +33,6 @@
             <th>Total Nilai</th>   
         </tr>
     </thead>
-    <tbody>
-        @foreach($products as $product)
-        <tr>
-            <td class="align-middle">{{ $loop->iteration }}</td>
-            <td class="align-middle">{{ $product->noBarang  }}</td>
-            <td class="align-middle">{{ $product->namaBarang  }}</td>
-            <td class="align-middle">{{ $product->qty  }}</td>
-            <td class="align-middle">{{ $product->hargaProduk  }}</td>
-            <td class="align-middle">{{ $product->total  }}</td>                                                
-        </tr>
-        @endforeach
-    </tbody>
 </table>
 
 

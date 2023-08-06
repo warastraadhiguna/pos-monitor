@@ -15,9 +15,21 @@ class Receipts extends Model
 
     public static function getSales($tanggalAwal, $tanggalAkhir)
     {
-        $sql = "SELECT noNota,'' as ID, DATE_FORMAT(tanggalNota, '%d-%m-%Y %H:%i')  as tanggalNota ,FORMAT(totalSebelumDiskon, 2, 'de_DE')  as totalSebelumDiskon,diskon,potongan,FORMAT(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100), 2, 'de_DE') as grandTotal, caraBayar, noReferensi, namaUser, ifnull(namaShopHolder,'') as namaShopHolder,keterangan ,bayar,kembalian from tnota where isPenjualan = 1 and isSelesai = 1 and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' order by tanggalNota desc" ;
+        $data = DB::query()
+        ->from("tnota")
+        ->select("noNota", DB::raw("DATE_FORMAT(tanggalNota, '%d-%m-%Y %H:%i')  as tanggalNota"), "diskon", "potongan", DB::raw("FORMAT(totalSebelumDiskon, 2, 'de_DE')  as totalSebelumDiskon"), DB::raw("FORMAT(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100), 2, 'de_DE') as grandTotal"), "caraBayar", "noReferensi", "namaUser", DB::raw("ifnull(namaShopHolder,'') as namaShopHolder"), "keterangan", "bayar", "kembalian")
+        ->where("isPenjualan", "=", 1)
+        ->where("isSelesai", "=", 1);
 
-        return DB::select($sql);
+        if($tanggalAwal) {
+            $data->where("tanggalNota", ">=", $tanggalAwal ." 00:00:00");
+        }
+
+        if($tanggalAkhir) {
+            $data->where("tanggalNota", "<=", $tanggalAkhir ." 23:59:59");
+        }
+
+        return $data->orderBy("tanggalNota", "desc");
     }
 
     public static function getTotalPenjualanHariIni($tanggalAwal, $tanggalAkhir)
@@ -100,9 +112,22 @@ class Receipts extends Model
 
     public static function getProductResume($tanggalAwal, $tanggalAkhir)
     {
-        $query =" SELECT noBarang , namaBarang, FORMAT(sum(qty), 2, 'de_DE')  as qty,  FORMAT(harga, 2, 'de_DE')  as hargaProduk,  FORMAT(sum(qty * harga), 2, 'de_DE')  as total FROM tnota inner join ttransaksi on ttransaksi.noNota=tnota.noNota where tnota.isPenjualan = 1 and tnota.isSelesai = 1 and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' group by noBarang ,namaBarang order by namaBarang";
+        $data = DB::query()
+        ->from("ttransaksi")
+        ->join("tnota", "ttransaksi.noNota", "=", "tnota.noNota")
+        ->select("ttransaksi.noBarang", "ttransaksi.namaBarang", DB::raw("FORMAT(sum(qty), 2, 'de_DE')  as qty,  FORMAT(harga, 2, 'de_DE')  as hargaProduk"), DB::raw("FORMAT(sum(qty * harga), 2, 'de_DE')  as total"))
+        ->where("tnota.isPenjualan", "=", 1)
+        ->where("tnota.isSelesai", "=", 1);
 
-        return DB::select($query);
+        if($tanggalAwal) {
+            $data->where("tnota.tanggalNota", ">=", $tanggalAwal ." 00:00:00");
+        }
+
+        if($tanggalAkhir) {
+            $data->where("tnota.tanggalNota", "<=", $tanggalAkhir ." 23:59:59");
+        }
+
+        return $data->groupBy("ttransaksi.noBarang", "ttransaksi.namaBarang")->orderBy("ttransaksi.namaBarang", "asc");
     }
 
     public static function getPurchasing($tanggalAwal, $tanggalAkhir, $status, $caraBayar)
@@ -110,9 +135,32 @@ class Receipts extends Model
         $statusQuery = $status != '4' ? "and isSelesai = $status" : "";
         $caraBayarQuery = $caraBayar != '4' ? "and caraBayar=$caraBayar" : "";
 
-        $sql = "SELECT noNota,'' as ID, DATE_FORMAT(tanggalNota, '%d-%m-%Y %H:%i')  as tanggalNota ,FORMAT(totalSebelumDiskon, 2, 'de_DE')  as totalSebelumDiskon,diskon,potongan,FORMAT(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100), 2, 'de_DE') as grandTotal, caraBayar  ,noReferensi, namaUser, ifnull(namaShopHolder,'') as namaShopHolder,keterangan, totalCicilan ,bayar,kembalian,isSelesai from tnota a left join (SELECT sum(nilai) as totalCicilan,noNota as noNotaCicilan FROM tcicilanhutang group by noNota) as b on a.noNota=b.noNotaCicilan where isPenjualan = 0 $statusQuery $caraBayarQuery and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' order by tanggalNota desc" ;
+        // $sql = "SELECT noNota,'' as ID, DATE_FORMAT(tanggalNota, '%d-%m-%Y %H:%i')  as tanggalNota ,FORMAT(totalSebelumDiskon, 2, 'de_DE')  as totalSebelumDiskon,diskon,potongan,FORMAT(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100), 2, 'de_DE') as grandTotal, caraBayar  ,noReferensi, namaUser, ifnull(namaShopHolder,'') as namaShopHolder,keterangan, totalCicilan ,bayar,kembalian,isSelesai from tnota a left join (SELECT sum(nilai) as totalCicilan,noNota as noNotaCicilan FROM tcicilanhutang group by noNota) as b on a.noNota=b.noNotaCicilan where isPenjualan = 0 $statusQuery $caraBayarQuery and tanggalNota <='". $tanggalAkhir ." 23:59:59' and tanggalNota >='". $tanggalAwal ." 00:00:00' order by tanggalNota desc" ;
 
-        return DB::select($sql);
+        // DB::raw("FORMAT(sum(qty * harga), 2, 'de_DE')  as total")
+
+        $data = DB::query()
+        ->from("tnota")
+        ->select("noNota", DB::raw("DATE_FORMAT(tanggalNota, '%d-%m-%Y %H:%i')  as tanggalNota"), DB::raw("FORMAT(totalSebelumDiskon, 2, 'de_DE')  as totalSebelumDiskon"), "diskon", "potongan", DB::raw("FORMAT(totalSebelumDiskon-potongan-(totalSebelumDiskon*diskon/100), 2, 'de_DE') as grandTotal"), "caraBayar", "noReferensi", "namaUser", DB::raw("ifnull(namaShopHolder,'') as namaShopHolder"), "keterangan", "bayar", "kembalian", "isSelesai")
+        ->where("tnota.isPenjualan", "=", "0");
+
+        if($tanggalAwal) {
+            $data->where("tnota.tanggalNota", ">=", $tanggalAwal ." 00:00:00");
+        }
+
+        if($tanggalAkhir) {
+            $data->where("tnota.tanggalNota", "<=", $tanggalAkhir ." 23:59:59");
+        }
+
+        if($status != '4') {
+            $data->where("isSelesai", "=", $status);
+        }
+
+        if($caraBayar != '4') {
+            $data->where("caraBayar", "=", $caraBayar);
+        }
+
+        return $data->orderBy("tanggalNota", "desc");
     }
 
 

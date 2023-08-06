@@ -4,7 +4,7 @@
 				</div>
 			</div>
 
-		      <table class="table table-bordered table-striped">
+		      <table class="table table-bordered table-striped" width="100%">
 		        <tbody>
 		          <tr>
 		            <td>No Nota</td>            

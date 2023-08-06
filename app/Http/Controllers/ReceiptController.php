@@ -3,23 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receipts;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
+use Yajra\DataTables\Facades\DataTables;
 
 class ReceiptController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $startDate = request()->start_date;
-        $endDate = request()->end_date;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
         $from = date($startDate ? $startDate : GetNowDate()->toDateString());
         $to = date($endDate ? $endDate : GetNowDate()->toDateString()) ;
-        $receipts = Receipts::getSales($from, $to);
+
+        if ($request->ajax()) {
+            return  DataTables::of(Receipts::getSales($from, $to))->addIndexColumn()->addColumn('action', function ($row) {
+                $btn = '<a type="button" href="'.URL::to("/admin/receipt/detail-sale/" . $row->noNota).'" class="btn btn-info" title="Lihat Detail"><i class="fas fa-search" aria-hidden="true"></i></a><a type="button"  href="'. URL::to('/admin/receipt/return-sale/' . $row->noNota).'" class="btn btn-warning" title="Lihat Retur"><i class="fas fa-sync" aria-hidden="true"></i></a> ';
+                return $btn;
+            })->rawColumns(['action'])->toJson();
+        }
 
         $data =[
             'title' => "Data Penjualan",
             'start_date' => $from,
             'end_date'  => $to,
-            'receipts'  => $receipts,
-            'content' => "admin/receipt-history/index"
+            'content' => "admin/receipt-history/sale-server-side"
         ];
 
         return view("admin.layouts.wrapper", $data);
@@ -43,7 +51,7 @@ class ReceiptController extends Controller
             'title' => "Return Penjualan",
             'receipt'  => Receipts::getNota($id),
             'details'   => Receipts::getRetur($id),
-            'content' => "admin/receipt-history/detail-sale"
+            'content' => "admin/receipt-history/return-sale"
         ];
 
         return view("admin.layouts.wrapper", $data);
@@ -69,37 +77,46 @@ class ReceiptController extends Controller
         return view("admin.layouts.wrapper", $data);
     }
 
-    public function showProductSaleReturn()
+    public function showProductSaleResume(Request $request)
     {
-        $startDate = request()->start_date;
-        $endDate = request()->end_date;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
         $from = date($startDate ? $startDate : GetNowDate()->toDateString());
         $to = date($endDate ? $endDate : GetNowDate()->toDateString()) ;
-        $products = Receipts::getProductResume($from, $to);
+
+        if ($request->ajax()) {
+            return  DataTables::of(Receipts::getProductResume($from, $to))->addIndexColumn()->toJson();
+        }
 
         $data =[
             'title' => "Ringkasan Penjualan Produk",
             'start_date' => $from,
             'end_date'  => $to,
-            'products'  => $products,
             'content' => "admin/receipt-history/sale-product-resume"
         ];
 
         return view("admin.layouts.wrapper", $data);
     }
 
-    public function showPurchasing()
+    public function showPurchasing(Request $request)
     {
-        $startDate = request()->start_date;
-        $endDate = request()->end_date;
-        $from = date($startDate ? $startDate : GetNowDate()->toDateString());
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $from = date($startDate ? $startDate : GetNowDate()->subMonths(2)->toDateString());
         $to = date($endDate ? $endDate : GetNowDate()->toDateString()) ;
 
-        $status = request()->status;
-        $status = !$status ? 4 : $status;
+        $status = $request->status;
+        $status = !$status ? "2" : $status;
 
-        $caraBayar = request()->caraBayar;
-        $caraBayar = !$caraBayar ? 4 : $caraBayar;
+        $caraBayar = $request->caraBayar;
+        $caraBayar = !$caraBayar ? "4" : $caraBayar;
+
+        if ($request->ajax()) {
+            return  DataTables::of(Receipts::getPurchasing($from, $to, $status, $caraBayar))->addIndexColumn()->addColumn('action', function ($row) {
+                $btn = '<a type="button" href="'.URL::to("/admin/receipt/detail-purchasing?id=" . $row->noNota).'" class="btn btn-info" title="Lihat Detail"><i class="fas fa-search" aria-hidden="true"></i></a><a type="button"  href="'. URL::to('/admin/receipt/return-purchasing?id=' . $row->noNota).'" class="btn btn-warning" title="Lihat Retur"><i class="fas fa-sync" aria-hidden="true"></i></a><a type="button"  href="'. URL::to('/admin/receipt/cicilan-purchasing?id=' . $row->noNota).'" class="btn btn-success" title="Lihat Cicilan"><i class="fas fa-money-bill" aria-hidden="true"></i></a> ';
+                return $btn;
+            })->rawColumns(['action'])->toJson();
+        }
 
         $data =[
             'title' => "Data Pembelian",
@@ -107,7 +124,6 @@ class ReceiptController extends Controller
             'end_date'  => $to,
             'caraBayar' =>$caraBayar,
             'status' => $status,
-            'receipts'  => Receipts::getPurchasing($from, $to, $status, $caraBayar),
             'content' => "admin/receipt-history/purchasing-list"
         ];
 

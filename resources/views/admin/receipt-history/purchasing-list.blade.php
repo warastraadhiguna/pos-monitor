@@ -2,7 +2,7 @@
 
 <div class="card">
     <div class="card-body">
-        <table class="table">
+        <table class="table table-responsive">
             <tbody>
                 <tr>
                     <td class="align-middle" width="10%">Tanggal</td>
@@ -45,7 +45,7 @@
 								?>
                         </select>                        
                     </td>
-                    <td class="align-middle" width="1%">:</td>
+                    <td class="align-middle" width="1%"></td>
                     <td width="5%">
 							<select name="status" id ="status" class="form-control">		
 								<?php
@@ -85,84 +85,20 @@
     </div>
 </div>
 
-<table id="example1" class="table table-bordered table-striped" width="100%">
+<table id="receipt-purchasing-table" class="table table-bordered table-striped table-responsive" width="100%">
     <thead>
         <tr>
-            <th width="5%">No</th>
-            <th>Data Nota</th>
-            <th>Data Pembayaran</th>
-            <th>Kasir</th>
-            <th>Status</th>            
+            <th width="40px">No</th>
+            <th>No Nota</th>	
+            <th>Supplier</th>	
+            <th>Grand Total</th>							
+            <th>Tanggal Nota</th>		    
+            <th>Cara Bayar</th>			
+            <th>Kasir</th>	
+            <th>Status</th>	
             <th width="15%">Action</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach($receipts as $receipt)
-        <tr>
-            <td class="align-middle">{{ $loop->iteration }}</td>
-            <td>
-                <table class="table table-borderless">
-                    <tbody>
-                        <tr>
-                            <td>No Nota</td>
-                            <td>:</td>
-                            <td>{{ $receipt->noNota }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tanggal Nota</td>
-                            <td>:</td>
-                            <td>{{ $receipt->tanggalNota }}</td>
-                        </tr>
-                        <tr>
-                            <td>Cara Bayar</td>
-                            <td>:</td>
-                            <td>{{ $receipt->caraBayar == "1" ? "Cash" :  ($receipt->caraBayar == "2"? "Debit" : "CC")}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Supplier</td>
-                            <td>:</td>
-                            <td>{{ $receipt->namaShopHolder  }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td>
-                <table class="table table-borderless">
-                    <tbody>
-                        <tr>
-                            <td>Total</td>
-                            <td>:</td>
-                            <td>{{ $receipt->totalSebelumDiskon }}</td>
-                        </tr>
-                        <tr>
-                            <td>Diskon</td>
-                            <td>:</td>
-                            <td>{{ $receipt->diskon }}</td>
-                        </tr>
-                        <tr>
-                            <td>Potongan</td>
-                            <td>:</td>
-                            <td>{{ $receipt->potongan }}</td>
-                        </tr>
-                        <tr>
-                            <td>Grand Total</td>
-                            <td>:</td>
-                            <td>{{ $receipt->grandTotal }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td class="align-middle">{{ $receipt->namaUser  }}</td>
-            <td class="align-middle">{{ $receipt->isSelesai == "1"? "Lunas" : "Belum"  }}</td>            
-            <td class="align-middle text-center">
-                <a type="button" href="{{ URL::to('/admin/receipt/detail-purchasing?id=' . $receipt->noNota); }}" class="btn btn-info" title="Lihat Detail"><i class="fas fa-search" aria-hidden="true"></i></a>
-                <a type="button"  href="{{ URL::to('/admin/receipt/return-purchasing?id=' . $receipt->noNota); }}" class="btn btn-warning" title="Lihat Retur"><i class="fas fa-sync" aria-hidden="true"></i></a>         
-                <a type="button"  href="{{ URL::to('/admin/receipt/cicilan-purchasing?id=' . $receipt->noNota); }}" class="btn btn-success" title="Lihat Retur"><i class="fas fa-money-bill" aria-hidden="true"></i></a>                          
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
 </table>
 
 

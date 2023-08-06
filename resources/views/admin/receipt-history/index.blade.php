@@ -2,7 +2,7 @@
 
 <div class="card">
     <div class="card-body">
-        <table class="table">
+        <table class="table table-responsive">
             <tbody>
                 <tr>
                     <td class="align-middle" width="10%">Tanggal</td>
@@ -22,7 +22,7 @@
     </div>
 </div>
 
-<table id="example1" class="table table-bordered table-striped" width="100%">
+<table id="example1" class="table table-bordered table-striped table-responsive" width="100%">
     <thead>
         <tr>
             <th width="5%">No</th>
